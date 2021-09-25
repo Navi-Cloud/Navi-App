@@ -23,24 +23,13 @@ class RegisterViewModel(
      * @param userRegisterRequest User Register Request Model
      */
     fun requestUserRegister(email: String, name: String, password: String) {
-        if (!validateModel(email, password)) {
-            // Valid Failed
+        // Valid. Do Dispatch.
+        dispatchIo {
             registerResult.postValue(
-                ExecutionResult(
-                    resultType = ResultType.ModelValidateFailed,
-                    value = null,
-                    message = "Input Email should be valid email, and password must contains special character, and its length should be more then 8."
+                userRepository.registerUser(
+                    UserRegisterRequest(email, name, password)
                 )
             )
-        } else {
-            // Valid. Do Dispatch.
-            dispatchIo {
-                registerResult.postValue(
-                    userRepository.registerUser(
-                        UserRegisterRequest(email, name, password)
-                    )
-                )
-            }
         }
     }
 }

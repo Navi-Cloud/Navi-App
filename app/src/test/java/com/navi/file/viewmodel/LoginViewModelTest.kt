@@ -6,18 +6,22 @@ import com.navi.file.model.UserLoginResponse
 import com.navi.file.model.intercommunication.ExecutionResult
 import com.navi.file.model.intercommunication.ResultType
 import com.navi.file.repository.server.user.UserRepository
+import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.Dispatchers
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class LoginViewModelTest: ViewModelHelper() {
     // Rule that every android-thread should launched in single thread
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-    private var mockUserRepository: UserRepository = Mockito.mock(UserRepository::class.java)
+    private var mockUserRepository: UserRepository = mock()
     private var loginViewModel: LoginViewModel = LoginViewModel(
         userRepository = mockUserRepository,
         dispatcherInfo = DispatcherInfo(
@@ -27,40 +31,26 @@ class LoginViewModelTest: ViewModelHelper() {
         )
     )
 
+    // Check whether default constructor creates its instance well.
     @Test
-    fun `Default constructor should create its instance well`() {
+    fun is_default_constructor_works_well() {
         val loginViewModel = LoginViewModel(mockUserRepository)
         Assert.assertNotNull(loginViewModel)
     }
 
+    // Check whether requestUserLogin sets livedata well.
     @Test
-    fun `requestUserLogin should set loginResult Data well`() {
-        // Setup
-        val emptyRequest = UserLoginRequest("test@testemail.com", "testPasswordTesting@")
-        val emptyResponse = UserLoginResponse("testToken")
-        Mockito.`when`(mockUserRepository.loginUser(emptyRequest))
-            .thenReturn(ExecutionResult(ResultType.Success, emptyResponse, ""))
+    fun is_requestUserLogin_sets_loginResult_well() {
+        // Setup Mock
+        whenever(mockUserRepository.loginUser(any()))
+            .thenReturn(ExecutionResult(ResultType.Success, null, ""))
 
         // Do
-        loginViewModel.requestUserLogin(emptyRequest.userEmail, emptyRequest.userPassword)
+        loginViewModel.requestUserLogin("", "")
 
         // Check
-        val response = loginViewModel.loginUser.getOrAwaitValue()
-        Assert.assertEquals(ResultType.Success, response.resultType)
-        Assert.assertEquals(emptyResponse.userToken, response.value?.userToken)
-    }
-
-    @Test
-    fun `requestUserLogin should set result as ModelValidateFailed when model is not valid`() {
-        // Setup
-        val emptyRequest = UserLoginRequest("test", "@")
-        val emptyResponse = UserLoginResponse("testToken")
-
-        // Do
-        loginViewModel.requestUserLogin(emptyRequest.userEmail, emptyRequest.userPassword)
-
-        // Check
-        val response = loginViewModel.loginUser.getOrAwaitValue()
-        Assert.assertEquals(ResultType.ModelValidateFailed, response.resultType)
+        loginViewModel.loginUser.getOrAwaitValue().also {
+            assertEquals(ResultType.Success, it.resultType)
+        }
     }
 }

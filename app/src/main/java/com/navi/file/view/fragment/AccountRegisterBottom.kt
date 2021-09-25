@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.navi.file.databinding.BottomRegisterBinding
+import com.navi.file.helper.FormValidator
 import com.navi.file.helper.ViewModelFactory
 import com.navi.file.model.intercommunication.DisplayScreen
 import com.navi.file.model.intercommunication.ExecutionResult
@@ -22,6 +24,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountRegisterBottom @Inject constructor(): BottomSheetDialogFragment() {
+    companion object {
+        val fragmentTag = "AccountRegisterBottom"
+    }
     private var _binding: BottomRegisterBinding? = null
     private val binding: BottomRegisterBinding get() = _binding!!
 
@@ -34,6 +39,16 @@ class AccountRegisterBottom @Inject constructor(): BottomSheetDialogFragment() {
 
     // Register View Model
     private val registerViewModel: RegisterViewModel by viewModels { viewModelFactory.registerViewModelFactory }
+
+    // Private getter for email and password
+    private val userInputEmail: String get() = binding.registerEmail.editText?.text.toString()
+    private val userInputPassword: String get() = binding.registerPassword.editText?.text.toString()
+    private val userInputPasswordMatches: String get() = binding.registerPasswordMatches.editText?.text.toString()
+
+    // Toast object
+    private val toast: Toast by lazy {
+        Toast(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,10 +68,30 @@ class AccountRegisterBottom @Inject constructor(): BottomSheetDialogFragment() {
                 ResultType.Success -> {
                     accountViewModel.displayLiveData.value = DisplayScreen.Login
                 }
-                else -> {handleRegisterError(it)}
+                ResultType.Conflict -> toast.showLongToast("User already exists!")
+                else -> {
+                    Log.e(this::class.java.simpleName, "Unknown Error occurred.")
+                    Log.e(this::class.java.simpleName, "Message: ${it.message}")
+                    toast.showLongToast("Unknown Error occurred!")
+                }
             }
         }
 
+        // setup View
+        setupView()
+    }
+
+    override fun onDestroyView() {
+        Log.d(this::class.java.simpleName, "Destroying AccountRegisterBottom!")
+        _binding = null
+        super.onDestroyView()
+    }
+
+    /**
+     * Setup View.
+     *
+     */
+    private fun setupView() {
         // When GOTO Login Clicked -> Change Display to Login.
         binding.gotoLoginFromRegister.setOnClickListener {
             accountViewModel.displayLiveData.value = DisplayScreen.Login
@@ -70,39 +105,96 @@ class AccountRegisterBottom @Inject constructor(): BottomSheetDialogFragment() {
                 name = "random"
             )
         }
-    }
 
-    override fun onDestroyView() {
-        Log.d(this::class.java.simpleName, "Destroying AccountRegisterBottom!")
-        _binding = null
-//        registerViewModel.registerResult.removeObservers(viewLifecycleOwner)
-        super.onDestroyView()
-    }
+        // Email Input
+        setupEmailInput()
 
-    /**
-     * Handle Registration Error, likely empty-ing text fields and show us an error.
-     *
-     * @param result Execution Result of Registration.
-     */
-    private fun handleRegisterError(result: ExecutionResult<ResponseBody>) {
-        emptyFields()
-        toastError(result.message)
+        // setup Password
+        setupPasswordInput()
+
+        // Setup Password Matcher
+        setupRePasswordInput()
     }
 
     /**
-     * Wrapper for showing toast messages.
+     * Setup Email Input[like listener.]
      *
-     * @param errorMessage Error Messages to show.
      */
-    private fun toastError(errorMessage: String) =
-        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show()
+    private fun setupEmailInput() {
+        binding.registerEmail.apply {
+            editText?.let {
+                // Add TextChangedListener
+                it.addTextChangedListener { _ ->
+                    binding.registerButton.isEnabled = FormValidator.validateModel(userInputEmail, userInputPassword)
+                }
+
+                // Setup FocusChangedListener for Email Input
+                it.setOnFocusChangeListener { _, hasFocus ->
+                    Log.e(this::class.java.simpleName, "FocusOnListener Executed[Email]")
+                    binding.registerEmail.error = if (!hasFocus && !FormValidator.validateEmail(userInputEmail)) {
+                        Log.e(this::class.java.simpleName, "Email is not valid at all.")
+                        "Please check your email again."
+                    } else {
+                        null
+                    }
+                }
+            }
+        }
+    }
 
     /**
-     * Clear out all input registration-fields.
+     * Setup Password Input[like listener]
      *
      */
-    private fun emptyFields() {
-        binding.registerEmail.editText!!.setText("")
-        binding.registerPassword.editText!!.setText("")
+    private fun setupPasswordInput() {
+        binding.registerPassword.apply {
+            editText?.let {
+                // Add TextChangedListener
+                it.addTextChangedListener { _ ->
+                    binding.registerButton.isEnabled = FormValidator.validateModel(userInputEmail, userInputPassword)
+                }
+
+                // Setup FocusChangedListener for Email Input
+                it.setOnFocusChangeListener { _, hasFocus ->
+                    binding.registerPassword.error = if (!hasFocus && !FormValidator.validatePassword(userInputPassword)) {
+                        "Password should be more then 8 characters, and should contains one or more special characters."
+                    } else {
+                        null
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Setup password matcher
+     *
+     */
+    private fun setupRePasswordInput() {
+        binding.registerPasswordMatches.apply {
+            editText?.let {
+                it.addTextChangedListener {
+                    binding.registerButton.isEnabled = userInputPassword == userInputPasswordMatches
+                }
+
+                it.setOnFocusChangeListener { _, hasFocus ->
+                    binding.registerPasswordMatches.error = if (!hasFocus && (userInputPassword != userInputPasswordMatches)) {
+                        "Password does not match!"
+                    } else null
+                }
+            }
+        }
+    }
+
+    /**
+     * Toast Extension for showing long-last message.
+     *
+     * @param message Message to show.
+     */
+    private fun Toast.showLongToast(message: CharSequence) {
+        this.cancel()
+        this.setText(message)
+        this.duration = Toast.LENGTH_LONG
+        this.show()
     }
 }

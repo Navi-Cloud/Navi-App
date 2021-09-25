@@ -46,14 +46,4 @@ class RegisterViewModelTest: ViewModelHelper() {
         val response = registerViewModel.registerResult.getOrAwaitValue()
         Assert.assertEquals(ResultType.Success, response.resultType)
     }
-
-    @Test
-    fun `requestUserRegister should return ModelValidateFailed when model is not valid`() {
-        // Do
-        registerViewModel.requestUserRegister("kangdroid@", "", "!")
-
-        // Check
-        val response = registerViewModel.registerResult.getOrAwaitValue()
-        Assert.assertEquals(ResultType.ModelValidateFailed, response.resultType)
-    }
 }

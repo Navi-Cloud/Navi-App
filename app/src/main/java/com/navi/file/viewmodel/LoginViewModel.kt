@@ -16,25 +16,18 @@ class LoginViewModel(
     val loginUser: MutableLiveData<ExecutionResult<UserLoginResponse>> = MutableLiveData()
 
     /**
-     * Request User Login to serverRepository.
-     * Since all input validation and after-handler is on UI, so we just handle communication.
+     * Request Login procedure to server.
+     * All input-validation is held on UI-side, so in this view model, we do not have to handle
+     * additional input validation.(we could do, but why?)
      *
-     * @param userLoginRequest
+     * @param email input-verified email
+     * @param password input-verified password
      */
     fun requestUserLogin(email: String, password: String) {
-        if (!validateModel(email, password)) {
-            loginUser.value = ExecutionResult(
-                resultType = ResultType.ModelValidateFailed,
-                value = null,
-                message = "Input Email should be valid email, and password must contains special character, and its length should be more then 8."
-            )
-        } else {
-            dispatchIo {
-                loginUser.postValue(
-                    userRepository.loginUser(
-                        UserLoginRequest(email, password)
-                    )
-                )
+        dispatchIo {
+            userRepository.loginUser(UserLoginRequest(email, password)).also {
+                // Send login result to loginUser[live data]
+                loginUser.postValue(it)
             }
         }
     }

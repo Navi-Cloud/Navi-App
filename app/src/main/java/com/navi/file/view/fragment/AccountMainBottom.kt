@@ -17,6 +17,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountMainBottom @Inject constructor(): BottomSheetDialogFragment() {
+    companion object {
+        val fragmentTag: String = "AccountMainBottom"
+    }
     private var _binding: BottomMainBinding? = null
     private val binding: BottomMainBinding get() = _binding!!
 
