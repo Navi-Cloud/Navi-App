@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">NaviFile</string>
+    <string name="contentDescription">Image</string>
 
     <!-- Register / Login Related -->
     <string name="app_register">Register</string>
@@ -17,6 +18,22 @@
     <string name="app_login_password">Password</string>
     <string name="app_login_remember_email">Remember Email</string>
     <string name="app_login_not_member">Not a member?</string>
+
+    <string name="file_default_last_modified_time">default-last-modified-time</string>
+
+    <!--    Home  -->
+    <string name="home">홈</string>
+    <string name="main_hint">파일, 폴더</string>
+    <string name="main_myFile">내 파일</string>
+    <string name="main_star">즐겨찾기</string>
+    <string name="main_recent">최근 파일</string>
+    <string name="main_category">카테고리</string>
+
+    <!--    dialog option box  -->
+    <string name="delete_recent_title">최근 파일 목록 지우기</string>
+    <string name="storage_analysis_title">저장공간 분석</string>
+    <string name="recycle_bin_title">휴지통</string>
+    <string name="setting_title">설정</string>
 
 
     <!-- Privacy Policy -->
