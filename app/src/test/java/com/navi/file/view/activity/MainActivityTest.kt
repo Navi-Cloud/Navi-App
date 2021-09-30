@@ -94,4 +94,29 @@ class MainActivityTest: ViewModelTestHelper() {
         }
     }
 
+    @Test
+    fun is_mainActivity_show_MyFileActivity_when_click_btn(){
+        // Create Activity Scenario
+        val activityScenario = launchActivity<MainActivity>().apply {
+            moveToState(Lifecycle.State.RESUMED)
+        }.also { Assert.assertEquals(Lifecycle.State.RESUMED, it.state) }
+
+        //actual
+        val activity : MainActivity = Robolectric.setupActivity(MainActivity::class.java)
+        val actual = Intent(activity, MyFileActivity::class.java)
+
+        // Check if option bottom btn is recognized
+        activityScenario.onActivity { mainActivity ->
+            val shadowActivity = shadowOf(mainActivity)
+
+            //action
+            getBinding<ActivityMainBinding, MainActivity>(mainActivity, "activityMainBinding").also { activityMainBinding ->
+                activityMainBinding.mainMyfile.performClick()
+
+                val intent = shadowActivity.nextStartedActivity
+                Assert.assertEquals(intent.component, actual.component)
+            }
+
+        }
+    }
 }
