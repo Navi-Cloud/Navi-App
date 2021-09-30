@@ -69,14 +69,11 @@ class MainActivityTest: ViewModelTestHelper() {
     }
 
     @Test
-    fun is_mainActivity_show_mainSearchBar_when_click_btn(){
+    fun is_mainActivity_show_SearchActivity_when_click_btn(){
         // Create Activity Scenario
         val activityScenario = launchActivity<MainActivity>().apply {
             moveToState(Lifecycle.State.RESUMED)
         }.also { Assert.assertEquals(Lifecycle.State.RESUMED, it.state) }
-
-        //mock
-        val mockOptionBottomSheetFragment = mock<OptionBottomSheetFragment>()
 
         //actual
         val activity : MainActivity = Robolectric.setupActivity(MainActivity::class.java)
@@ -85,9 +82,6 @@ class MainActivityTest: ViewModelTestHelper() {
         // Check if option bottom btn is recognized
         activityScenario.onActivity { mainActivity ->
             val shadowActivity = shadowOf(mainActivity)
-
-            //inject
-            mainActivity.optionBottomSheetFragment = mockOptionBottomSheetFragment
 
             //action
             getBinding<ActivityMainBinding, MainActivity>(mainActivity, "activityMainBinding").also { activityMainBinding ->
@@ -99,4 +93,5 @@ class MainActivityTest: ViewModelTestHelper() {
 
         }
     }
+
 }
