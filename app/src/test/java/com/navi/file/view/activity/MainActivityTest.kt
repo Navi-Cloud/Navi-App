@@ -3,6 +3,7 @@ package com.navi.file.view.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
@@ -69,6 +70,32 @@ class MainActivityTest: ViewModelTestHelper() {
     }
 
     @Test
+    fun is_mainActivity_show_optionBottomSheetFragment_when_click_btn(){
+        // Create Activity Scenario
+        val activityScenario = launchActivity<MainActivity>().apply {
+            moveToState(Lifecycle.State.RESUMED)
+        }.also { Assert.assertEquals(Lifecycle.State.RESUMED, it.state) }
+
+        //mock
+        val mockOptionBottomSheetFragment = mock<OptionBottomSheetFragment>()
+
+        // Check if option bottom btn is recognized
+        activityScenario.onActivity { mainActivity ->
+            //inject
+            mainActivity.optionBottomSheetFragment = mockOptionBottomSheetFragment
+
+            //action
+            getBinding<ActivityMainBinding, MainActivity>(mainActivity, "activityMainBinding").also { activityMainBinding ->
+                activityMainBinding.mainOption.performClick()
+
+                //check
+                verify(mockOptionBottomSheetFragment).show(any<FragmentManager>(), any())
+            }
+
+        }
+    }
+
+    @Test
     fun is_mainActivity_show_SearchActivity_when_click_btn(){
         // Create Activity Scenario
         val activityScenario = launchActivity<MainActivity>().apply {
@@ -119,4 +146,5 @@ class MainActivityTest: ViewModelTestHelper() {
 
         }
     }
+
 }
