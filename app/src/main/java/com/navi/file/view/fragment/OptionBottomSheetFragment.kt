@@ -11,6 +11,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class OptionBottomSheetFragment @Inject constructor() : BottomSheetDialogFragment() {
+    companion object {
+        val fragmentTag = "OptionBottomSheetFragment"
+    }
+
     private val logTag: String = this::class.java.simpleName
     private var _dialogOptionBoxBinding: DialogOptionBoxBinding? = null
     private val dialogOptionBoxBinding: DialogOptionBoxBinding get() = _dialogOptionBoxBinding!!
