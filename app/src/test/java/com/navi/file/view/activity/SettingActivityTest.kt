@@ -22,7 +22,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.mock
+import org.mockito.kotlin.*
 import org.robolectric.annotation.Config
 import javax.inject.Singleton
 
@@ -30,7 +30,7 @@ import javax.inject.Singleton
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [Build.VERSION_CODES.Q], manifest = Config.NONE, application = HiltTestApplication::class)
-class SettingActivityTest : ViewModelTestHelper(){
+class SettingActivityTest: ViewModelTestHelper() {
     // Application Context
     private lateinit var context: Context
 
@@ -53,4 +53,14 @@ class SettingActivityTest : ViewModelTestHelper(){
         context = ApplicationProvider.getApplicationContext()
         hiltRule.inject()
     }
+
+    @Test
+    fun is_settingActivity_is_alive(){
+        launchActivity<SettingActivity>().apply {
+            moveToState(Lifecycle.State.RESUMED)
+        }.also {
+            Assert.assertEquals(Lifecycle.State.RESUMED, it.state)
+        }
+    }
+
 }

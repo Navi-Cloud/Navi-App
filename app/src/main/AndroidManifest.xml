@@ -26,6 +26,7 @@
         <activity android:name=".view.activity.MyFileActivity"/>
         <activity android:name=".view.activity.SearchActivity"/>
         <activity android:name=".view.activity.MainActivity"/>
+        <activity android:name=".view.activity.SettingActivity"/>
     </application>
 
 </manifest>
