@@ -53,13 +53,4 @@ class SettingActivityTest : ViewModelTestHelper(){
         context = ApplicationProvider.getApplicationContext()
         hiltRule.inject()
     }
-
-    @Test
-    fun is_settingActivity_is_alive(){
-        launchActivity<SettingActivity>().apply {
-            moveToState(Lifecycle.State.RESUMED)
-        }.also {
-            Assert.assertEquals(Lifecycle.State.RESUMED, it.state)
-        }
-    }
 }
