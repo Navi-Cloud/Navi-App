@@ -12,6 +12,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.navi.file.R
 import com.navi.file.helper.ViewModelFactory
 import com.navi.file.hilt.ViewModelFactoryModule
 import com.navi.file.view.fragment.AccountMainBottom
@@ -25,6 +26,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
+import junit.framework.Assert.assertTrue
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -92,8 +94,9 @@ class MyFileActivityTest : ViewModelTestHelper() {
 
         val mockTransaction = mock<FragmentTransaction>()
         activityScenario.onActivity { myFileActivity ->
-            myFileActivity.transaction = mockTransaction
-            Assert.assertNotNull(mockTransaction)
+            myFileActivity.supportFragmentManager.findFragmentById(R.id.myfile_framelayout).also {
+                assertTrue(it is MyFileFragment)
+            }
         }
     }
 }
