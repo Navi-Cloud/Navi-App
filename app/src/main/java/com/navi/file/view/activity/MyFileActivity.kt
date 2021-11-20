@@ -2,6 +2,7 @@ package com.navi.file.view.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentTransaction
 import com.navi.file.R
 import com.navi.file.databinding.ActivityMyfileBinding
 import com.navi.file.view.fragment.MyFileFragment
@@ -15,6 +16,8 @@ class MyFileActivity : AppCompatActivity() {
         ActivityMyfileBinding.inflate(layoutInflater)
     }
 
+    var transaction : FragmentTransaction ?= null
+
     @Inject
     lateinit var myFileFragment : MyFileFragment
 
@@ -22,9 +25,10 @@ class MyFileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(activityMyFileBinding.root)
 
+        myFileFragment = MyFileFragment()
 
         activityMyFileBinding.apply {
-            supportFragmentManager.beginTransaction().apply {
+            transaction = supportFragmentManager.beginTransaction().apply {
                 replace(R.id.myfile_framelayout, myFileFragment)
                 commit()
             }
