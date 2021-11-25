@@ -1,5 +1,6 @@
 package com.navi.file.hilt
 
+import com.navi.file.BuildConfig
 import com.navi.file.repository.server.folder.FolderRepository
 import com.navi.file.repository.server.user.UserRepository
 import dagger.Module
@@ -19,8 +20,8 @@ object RepositoryModule {
     fun createRetrofit(): Retrofit {
         val httpUrl = HttpUrl.Builder()
             .scheme("http")
-            .host("192.168.0.46")
-            .port(5000)
+            .host(BuildConfig.SERVER_URL)
+            .port(BuildConfig.SERVER_PORT)
             .build()
 
         return Retrofit.Builder()
