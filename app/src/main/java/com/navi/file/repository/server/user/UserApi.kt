@@ -9,9 +9,9 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface UserApi {
-    @POST("/api/auth/join")
+    @POST("/api/v1/user/join")
     fun registerUser(@Body userRegisterRequest: UserRegisterRequest): Call<ResponseBody>
 
-    @POST("/api/auth/login")
+    @POST("/api/v1/user/login")
     fun loginUser(@Body userLoginRequest: UserLoginRequest): Call<UserLoginResponse>
 }
